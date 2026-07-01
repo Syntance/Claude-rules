@@ -1,42 +1,42 @@
 ---
 name: syntance-design
-description: Design wizualny klasy Awwwards — system kolorów OKLCH, typografia, layout, hierarchia, hero moment, ikony/assety, copywriting i mikrocopy. Zasada zero-stock. Włącz przy projektowaniu wyglądu, palety, typografii, sekcji hero, doborze assetów, pisaniu treści UI.
+description: Awwwards-caliber visual design - OKLCH color systems, typography, layout, hierarchy, hero moments, icons/assets, copywriting and microcopy. Zero-stock principle. Activate when designing visuals, choosing a palette, typography, hero sections, sourcing assets, or writing UI copy.
 ---
 
-# Design system i estetyka
+# Design System and Aesthetics
 
-Benchmark estetyki: Active Theory, Resn, Locomotive, Obys, Igloo Inc., Basement, Immersive Garden. Do palet, par typograficznych i wzorców używaj skilla **UI/UX Pro Max** (`/ui-ux-pro-max`). Do gotowych sekcji **21st.dev Magic** (`/ui`).
+Aesthetic benchmark: Active Theory, Resn, Locomotive, Obys, Igloo Inc., Basement, Immersive Garden. Use the **UI/UX Pro Max** skill (`/ui-ux-pro-max`) for palettes and type pairings, and **21st.dev Magic** (`/ui`) for ready-made sections.
 
 ## Mindset
-- Craft > liczba featur'ów. Restraint > przeładowanie. Jeden pamiętny moment na projekt, reszta go wspiera.
-- Specificity tax: im bardziej generycznie, tym gorzej. Każdy element odpowiada „czemu akurat to, akurat tu”.
-- First frame contract: co user widzi po loaderze decyduje o wszystkim. Value prop czytelna w 5s.
+- Craft > feature count. Restraint > clutter. One memorable moment per project; everything else supports it.
+- Specificity tax: the more generic, the worse. Every element must answer "why this, specifically here".
+- First frame contract: what the user sees after the loader decides everything. Value prop readable in 5s.
 
-## Kolor (OKLCH)
-- Paleta w CSS variables, przestrzeń OKLCH. Hex tylko gdy zewnętrzne API wymaga, z `@supports (color: oklch(0 0 0))` fallback.
-- NIGDY czystego `#000`/`#FFF` w brandzie — zawsze lekko tonowany OKLCH (wyjątek: tabele danych, print, wymóg kontrastu).
-- Kontrast: 4.5:1 tekst normal, 3:1 large + UI. Sprawdzaj każdą parę.
+## Color (OKLCH)
+- Palette as CSS variables, OKLCH color space. Hex only when an external API requires it, with `@supports (color: oklch(0 0 0))` fallback.
+- NEVER pure `#000`/`#FFF` in brand elements — always a slightly toned OKLCH (exception: data tables, print, contrast requirements).
+- Contrast: 4.5:1 normal text, 3:1 large text + UI. Check every pair.
 
-## Typografia
-- Bez stock fontów bez uzasadnienia axes (Roboto, Open Sans, Poppins, Lato, Montserrat, Inter „z pudełka”).
-- `next/font`, display: swap, preload tylko dla display. Skala modularna, świadomy tracking/leading.
+## Typography
+- No stock fonts without justified variable axes (Roboto, Open Sans, Poppins, Lato, Montserrat, Inter "out of the box").
+- `next/font`, display: swap, preload only for display font. Modular scale, deliberate tracking/leading.
 
-## Layout i hierarchia
-- Siatka + rytm pionowy. Jedna dominanta na widok. Whitespace jako narzędzie, nie brak treści.
-- Hero pokazuje produkt/wynik („after state”), nie abstrakcję. Jedno primary CTA dominujące wizualnie.
+## Layout and hierarchy
+- Grid + vertical rhythm. One dominant element per view. Whitespace as a tool, not absence of content.
+- Hero shows the product/outcome (the "after state"), not an abstraction. One primary CTA, visually dominant.
 
 ## Zero-stock (NEVER)
-- Stock ikony wszędzie (Lucide/Heroicons) w hero/nav bez override → Iconsax lub custom set ≥ 12 ikon.
-- Stock ilustracje (unDraw, Storyset, Humaaans). Stock zdjęcia bez gradingu (LUT, contrast curve).
-- Generyczne gradienty Tailwind (`from-purple-500 to-pink-500`).
+- Stock icons everywhere (Lucide/Heroicons) in hero/nav without customization → use Iconsax or a custom set of ≥ 12 icons.
+- Stock illustrations (unDraw, Storyset, Humaaans). Stock photos without grading (LUT, contrast curve).
+- Generic Tailwind gradients (`from-purple-500 to-pink-500`).
 
-## Copy / mikrocopy
-- Zero generyków („Get Started”, „Learn More”, „Our Services”). Czasownik + wynik.
-- Mikrocopy rozbraja ryzyko przy CTA: „Bez karty”, „Anuluj w każdej chwili”, „Odpowiedź w 24h”.
-- Alt texty: dekoracyjne `alt=""`, znaczące opisują intencję.
+## Copy / microcopy
+- No generic phrases ("Get Started", "Learn More", "Our Services"). Verb + outcome.
+- Microcopy next to CTAs disarms risk: "No card required", "Cancel anytime", "Reply within 24h".
+- Alt text: decorative images `alt=""`, meaningful ones describe intent.
 
-## Assety
-- Obrazy: AVIF/WebP przez next/image. LCP image ≤ 120 KB. SVG od usera zakazany (XSS).
-- Video: poster + lazy, `prefers-reduced-motion` wyłącza autoplay.
+## Assets
+- Images: AVIF/WebP via next/image. LCP image ≤ 120 KB. User-uploaded SVG forbidden (XSS risk).
+- Video: poster + lazy load, `prefers-reduced-motion` disables autoplay.
 
-Powiązane: `syntance-motion-3d` (ruch), `syntance-conversion-cro` (układ pod konwersję), `syntance-perf-a11y-seo-geo` (kontrast/a11y).
+Related: `syntance-motion-3d` (motion), `syntance-conversion-cro` (layout for conversion), `syntance-perf-a11y-seo-geo` (contrast/a11y).

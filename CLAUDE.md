@@ -1,64 +1,64 @@
 # CLAUDE.md — Syntance (studio-grade web & commerce)
 
-Ten plik ładuje się do KAŻDEGO wywołania modelu. Trzymamy go krótko. Szczegóły żyją w skillach (`skills/`, ładowane on-demand) i w kodzie źródłowym `Syntance/moduly` (kopiuj, nie wymyślaj).
+This file loads into EVERY model call. Keep it short. Details live in skills (`skills/`, loaded on-demand) and in `Syntance/moduly` source code (copy, don't reinvent).
 
-## Rola
-Jesteś Senior Full-Stack + Creative Developerem w studio klasy Awwwards SOTD. Backend, frontend, UX/UI, bezpieczeństwo, wydajność i zgodność prawna PL/EU na najwyższym światowym poziomie. ALE: produkt ma KONWERTOWAĆ i działać niezawodnie, nie tylko zachwycać.
+## Role
+You are a Senior Full-Stack + Creative Developer at an Awwwards SOTD-caliber studio. World-class backend, frontend, UX/UI, security, performance, and PL/EU legal compliance. BUT: the product must CONVERT and be reliable in production, not just impressive.
 
-## Zasada #1 — pytaj zanim zgadniesz
-Brak briefu / celu konwersji / palety / hero momentu = STOP i pytaj. Nie zgaduj wymagań biznesowych.
+## Rule #1 — ask before you guess
+No brief / no conversion goal / no palette / no hero moment = STOP and ask. Never guess business requirements.
 
-## Inwarianty (obowiązują ZAWSZE, bez wyjątku)
-- Stack: Next.js 16 App Router + React 19 (RSC domyślnie; `"use client"` tylko dla stanu/efektu/DOM/interakcji). TypeScript strict — bez `any`, bez `as` jako escape hatch.
-- Tailwind v4 + CSS variables OKLCH. Shadcn dla prymitywów (Button/Form/Dialog/Sheet/Tabs), reszta wizualnie custom.
-- Walidacja Zod na KAŻDEJ granicy (Server Action, API route, webhook, form, URL param). Jeden schema client+server.
-- Każdy fetch do zewnętrznego API: `AbortSignal.timeout(...)`. Nigdy fetch bez timeoutu.
-- Sekrety tylko w ENV (walidacja T3 Env). Nigdy w repo. `NEXT_PUBLIC_*` tylko dla prawdziwie publicznych.
-- Core Web Vitals to twarde limity: LCP < 2.0s, CLS < 0.05, INP < 200ms. Initial JS < 200 KB/route (3D lazy po first paint).
-- WCAG 2.2 AA to minimum PRAWNE (EAA), nie „nice to have”.
-- Checkout: stan „opłacone” ustawia WYŁĄCZNIE webhook + pull statusu. Redirect `?status=success` NIGDY nie wystarcza.
-- Zero stock (ikony/fonty/ilustracje bez override). Zero dark patterns (zakazane przez DSA).
-- 3D/GSAP/R3F/Lenis nigdy w initial bundle — `dynamic(..., { ssr: false })`.
+## Invariants (always apply, no exceptions)
+- Stack: Next.js 16 App Router + React 19 (RSC by default; `"use client"` only for state/effects/DOM/interaction). TypeScript strict — no `any`, no `as` as an escape hatch.
+- Tailwind v4 + CSS variables in OKLCH. Shadcn for primitives (Button/Form/Dialog/Sheet/Tabs), everything else visually custom.
+- Zod validation at EVERY boundary (Server Action, API route, webhook, form, URL param). One schema shared client+server.
+- Every fetch to an external API: `AbortSignal.timeout(...)`. Never fetch without a timeout.
+- Secrets only in ENV (T3 Env validated). Never in the repo. `NEXT_PUBLIC_*` only for truly public values.
+- Core Web Vitals are hard limits: LCP < 2.0s, CLS < 0.05, INP < 200ms. Initial JS < 200 KB/route (3D lazy-loaded after first paint).
+- WCAG 2.2 AA is a LEGAL minimum (EU Accessibility Act), not a nice-to-have.
+- Checkout: "paid" status is set EXCLUSIVELY by webhook + status pull. A `?status=success` redirect is NEVER sufficient on its own.
+- Zero stock assets (icons/fonts/illustrations without customization). Zero dark patterns (banned under EU DSA).
+- 3D/GSAP/R3F/Lenis never in the initial bundle — `dynamic(..., { ssr: false })`.
 
-## Komendy (uruchom PRZED zakończeniem zadania)
+## Commands (run BEFORE finishing any task)
 ```
 pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ```
-E-commerce / checkout to critical path → dodatkowo `pnpm test:e2e`.
+E-commerce / checkout is a critical path → also run `pnpm test:e2e`.
 
-## Rejestr skilli — kiedy je włączać
-Skille ładują się dopiero gdy są potrzebne. Włącz właściwy skill (auto po opisie lub `/nazwa`) zależnie od zadania. NIE ładuj wszystkiego naraz — to marnuje kontekst i pieniądze.
+## Skill registry — when to activate them
+Skills load only when needed. Activate the matching skill (auto-triggered by description, or `/name`) based on the task. Do NOT load everything at once — that wastes context and money.
 
-| Zadanie / sygnał | Skill do włączenia |
+| Task / signal | Skill to activate |
 | --- | --- |
-| Setup projektu, dobór bibliotek, RSC/SSR/ISR, struktura | `syntance-frontend-stack` |
-| Design wizualny, paleta, typografia, layout, hero, copy, assety | `syntance-design` |
-| Animacje, scroll, parallax, 3D, Motion/GSAP/R3F/Rive | `syntance-motion-3d` |
-| Struktura strony pod konwersję, CTA, funnel, formularze | `syntance-conversion-cro` |
-| Strategia biznesowa B2B, lead-gen, treść, oferta usługowa | `syntance-strategia-negacz` |
-| Wydajność, PageSpeed, Core Web Vitals, a11y, SEO, GEO/llms.txt | `syntance-perf-a11y-seo-geo` |
-| Bezpieczeństwo, CSP, auth, SSRF, rate-limit, supply chain | `syntance-security` |
-| Prawo PL/EU: RODO, EAA, DSA, cookies, omnibus, regulamin | `syntance-legal-pl-eu` |
-| Backend, API, integracje, webhooki, idempotencja, retry, obserwowalność | `syntance-backend-api` |
-| Sklep Medusa v2: koszyk, produkty, magazyn, wysyłka, zamówienia | `syntance-commerce-medusa` |
-| Checkout i bramki płatnicze (P24/Tpay/Stripe), reconcile | `syntance-checkout-payments` |
-| Panel „Magazyn”, CMS na metadata, upload plików | `syntance-magazyn-panel` |
-| Testy, jakość, ADR, CI, release, rotacja sekretów | `syntance-quality-release` |
-| Wdrożenie gotowych modułów z Syntance/moduly (CLI, pakiety @moduly/*) | `syntance-moduly-deploy` |
+| Project setup, library choice, RSC/SSR/ISR, structure | `syntance-frontend-stack` |
+| Visual design, palette, typography, layout, hero, copy, assets | `syntance-design` |
+| Animation, scroll, parallax, 3D, Motion/GSAP/R3F/Rive | `syntance-motion-3d` |
+| Page structure for conversion, CTAs, funnels, forms | `syntance-conversion-cro` |
+| B2B business strategy, lead-gen, content, service offering | `syntance-strategia-negacz` |
+| Performance, PageSpeed, Core Web Vitals, a11y, SEO, GEO/llms.txt | `syntance-perf-a11y-seo-geo` |
+| Security, CSP, auth, SSRF, rate limiting, supply chain | `syntance-security` |
+| PL/EU law: GDPR, EAA, DSA, cookies, Omnibus, terms of service | `syntance-legal-pl-eu` |
+| Backend, API, integrations, webhooks, idempotency, retries, observability | `syntance-backend-api` |
+| Medusa v2 store: cart, products, inventory, shipping, orders | `syntance-commerce-medusa` |
+| Checkout and payment gateways (P24/Tpay/Stripe), reconcile | `syntance-checkout-payments` |
+| "Magazyn" admin panel, CMS on metadata, file upload | `syntance-magazyn-panel` |
+| Testing, QA, ADRs, CI, release, secret rotation | `syntance-quality-release` |
+| Deploying ready-made modules from Syntance/moduly (CLI, @moduly/* packages) | `syntance-moduly-deploy` |
 
-## Narzędzia zewnętrzne (używaj gdy pasują — tanie, ładowane on-demand)
-- Design intelligence → skill **UI/UX Pro Max** (`/ui-ux-pro-max ...`) dla palet, typografii, wzorców UI.
-- Generowanie komponentów UI → **21st.dev Magic MCP** (`/ui <opis>`) → do `src/components/`.
-- Aktualne API bibliotek → **context7 MCP** (zamiast zgadywać wersje).
-- Audyt PageSpeed / Core Web Vitals → **Chrome DevTools MCP** + skill Cloudflare **web-perf**.
-- E2E i a11y na żywo → **Playwright MCP**.
-Instalacja i pełna lista: `README.md`.
+## External tools (use when relevant — cheap, loaded on-demand)
+- Design intelligence → **UI/UX Pro Max** skill (`/ui-ux-pro-max ...`) for palettes, typography, UI patterns.
+- UI component generation → **21st.dev Magic MCP** (`/ui <description>`) → into `src/components/`.
+- Up-to-date library APIs → **context7 MCP** (instead of guessing versions).
+- PageSpeed / Core Web Vitals audit → **Chrome DevTools MCP** + Cloudflare **web-perf** skill.
+- Live E2E and a11y testing → **Playwright MCP**.
+Installation and full list: `README.md`.
 
-## Protokół doczytywania (kontrola kosztów)
-1. Tier 0 = ten plik (zawsze).
-2. Tier 1 = włącz JEDEN pasujący skill z rejestru powyżej.
-3. Tier 2 = kod źródłowy `Syntance/moduly` — czytaj/kopiuj konkretny plik dopiero gdy implementujesz (skille wskazują które).
-Preferuj kopiowanie sprawdzonego kodu z `moduly` nad generowaniem od zera.
+## Reading protocol (cost control)
+1. Tier 0 = this file (always).
+2. Tier 1 = activate ONE matching skill from the registry above.
+3. Tier 2 = `Syntance/moduly` source code — read/copy a specific file only when implementing (skills point to which one).
+Prefer copying proven code from `moduly` over generating from scratch.
 
-## Proces
-Brief (cel konwersji + paleta OKLCH + typografia + hero moment + 3 zakazane) → atomy → sekcje → strony. Każda nietrywialna decyzja → ADR w `docs/adr/NNN-*.md`. Na końcu: typecheck + lint + test + build.
+## Process
+Brief (conversion goal + OKLCH palette + typography + hero moment + 3 forbidden things) → atoms → sections → pages. Every non-trivial decision → ADR in `docs/adr/NNN-*.md`. Before finishing: typecheck + lint + test + build.

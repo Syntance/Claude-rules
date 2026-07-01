@@ -1,41 +1,41 @@
 ---
 name: syntance-strategia-negacz
-description: Strategia biznesowa dla stron usługowych B2B w duchu Szymona Negacza / SellWise — specjalizacja i pozycjonowanie, ICP, edukacja rynku, marketing treści (TOFU/MOFU/BOFU), lead-gen zamiast hard-sellu, alignment sprzedaży i marketingu, oferta oparta na realnym problemie. Włącz przy projektowaniu strony firmy usługowej, oferty, sekcji o nas, bloga, ścieżki pozyskania leada B2B.
+description: B2B business strategy for service websites, inspired by Szymon Negacz / SellWise methodology - specialization and positioning, ICP, market education, content marketing (TOFU/MOFU/BOFU), lead-gen instead of hard-selling, sales-marketing alignment, problem-driven offers. Activate when designing a B2B service company site, an offer, an about page, a blog, or a B2B lead acquisition path.
 ---
 
-# Strategia biznesowa B2B (podejście Negacz / SellWise)
+# B2B Business Strategy (Negacz / SellWise approach)
 
-Dla stron usługowych i B2B (nie sklepów B2C — tam patrz `syntance-conversion-cro`). Cel: strona jako narzędzie edukacji rynku i pozyskiwania leadów, nie broszura.
+For service and B2B sites (not B2C stores — see `syntance-conversion-cro` for those). Goal: the site as a market-education and lead-generation tool, not a brochure.
 
-## Fundament strategiczny (ustal PRZED strukturą strony)
-- **Specjalizacja / niszowanie**: dla kogo dokładnie i w czym jesteśmy najlepsi. Generyczny „robimy wszystko dla wszystkich” = brak pozycji. Wąska nisza wygrywa.
-- **ICP** (Ideal Customer Profile): branża, wielkość, rola decydenta, budżet, sytuacja wyzwalająca zakup.
-- **Pozycjonowanie**: jedno zdanie „jesteśmy X dla Y, którzy chcą Z, w odróżnieniu od W”.
-- **Realny problem klienta**: oferta odpowiada na palący problem, nie opisuje features firmy. Język korzyści klienta, nie chwalenia się.
+## Strategic foundation (establish BEFORE structuring the page)
+- **Specialization / niching down**: exactly who for and what we're best at. A generic "we do everything for everyone" = no position. A narrow niche wins.
+- **ICP** (Ideal Customer Profile): industry, size, decision-maker role, budget, the triggering situation for purchase.
+- **Positioning**: one sentence — "we are X for Y who want Z, unlike W".
+- **The customer's real problem**: the offer answers a pressing problem, it doesn't describe company features. Speak in the customer's benefit language, not self-praise.
 
-## Edukacja rynku (rdzeń podejścia)
-- Większość rynku NIE jest gotowa kupić dziś. Strona ma edukować, budować zaufanie i „dogrzewać”, nie tylko łapać gotowych.
-- Treść odpowiada na realne pytania i obiekcje ICP na każdym etapie świadomości:
-  - **TOFU** (nieświadomy problemu): artykuły/edukacja, definicja problemu, „dlaczego to boli”.
-  - **MOFU** (świadomy problemu, szuka rozwiązań): porównania podejść, case studies, metodologia, webinary/lead magnety.
-  - **BOFU** (wybiera dostawcę): oferta, proces współpracy, dowód (wyniki, referencje), wycena/konsultacja.
-- Content-led inbound: blog/wiedza jako aktywo SEO/GEO (→ `syntance-perf-a11y-seo-geo`), nie ozdoba.
+## Market education (the core of this approach)
+- Most of the market is NOT ready to buy today. The site's job is to educate, build trust, and "warm up" prospects, not just catch the ready-to-buy few.
+- Content answers real questions and objections of the ICP at every awareness stage:
+  - **TOFU** (problem-unaware): educational articles, defining the problem, "why this hurts".
+  - **MOFU** (solution-aware, researching options): approach comparisons, case studies, methodology, webinars/lead magnets.
+  - **BOFU** (choosing a vendor): the offer, the collaboration process, proof (results, testimonials), pricing/consultation.
+- Content-led inbound: the blog/knowledge base as an SEO/GEO asset (→ `syntance-perf-a11y-seo-geo`), not decoration.
 
-## Struktura strony usługowej B2B
-- Hero: dla kogo + jaki problem rozwiązujemy + dowód. Nie slogan-zagadka.
-- Sekcja problemu (empatia, nazwanie bólu) → nasze podejście/metoda → dowód (case, liczby, logo) → proces współpracy (odczarowanie „co dalej”) → oferta/pakiety → FAQ (obiekcje) → CTA konsultacja.
-- Primary conversion action B2B: umów konsultację / pobierz materiał / zostaw kontakt — NIE „kup teraz”.
-- Formularz leada krótki (email + kontekst), reszta w rozmowie. Lead magnet > zimny formularz.
+## B2B service page structure
+- Hero: who it's for + what problem we solve + proof. Not a riddle-slogan.
+- Problem section (empathy, naming the pain) → our approach/method → proof (case study, numbers, logos) → collaboration process (demystify "what's next") → offer/packages → FAQ (objections) → CTA: book a consultation.
+- Primary B2B conversion action: book a consultation / download a resource / leave contact info — NOT "buy now".
+- Short lead form (email + context); the rest happens in conversation. Lead magnet > cold form.
 
-## Sprzedaż + marketing (SMarketing alignment)
-- Marketing generuje i dogrzewa leady, sprzedaż domyka — wspólna definicja leada (MQL/SQL) i wspólne cele.
-- Mierz jakość leadów, nie tylko ilość. Ścieżka: treść → lead magnet → nurturing (mail) → konsultacja → oferta.
-- Event taxonomy pod lejek B2B: `content_view`, `lead_magnet_download`, `consultation_request`, `proposal_sent`.
+## Sales + marketing alignment (SMarketing)
+- Marketing generates and nurtures leads, sales closes them — shared definition of a lead (MQL/SQL) and shared goals.
+- Measure lead quality, not just volume. Path: content → lead magnet → nurturing (email) → consultation → proposal.
+- Event taxonomy for the B2B funnel: `content_view`, `lead_magnet_download`, `consultation_request`, `proposal_sent`.
 
-## Czego NIE robić
-- Bez manipulacji i fake urgency (sprzeczne z DSA i długoterminowym zaufaniem — `syntance-legal-pl-eu`).
-- Bez pustego korporacyjnego żargonu. Konkret, liczby, realne case'y.
-- Bez ukrywania cen/procesu jeśli buduje to nieufność — transparentność sprzedaje w B2B.
+## What NOT to do
+- No manipulation or fake urgency (violates the DSA — `syntance-legal-pl-eu` — and long-term trust).
+- No empty corporate jargon. Be concrete, use numbers, real case studies.
+- Don't hide pricing/process if transparency builds trust — transparency sells in B2B.
 
-## Powiązania
-Konwersja i formularze: `syntance-conversion-cro`. SEO/GEO treści: `syntance-perf-a11y-seo-geo`. Formularze i skrzynka: `syntance-magazyn-panel` + moduł `forms` w `Syntance/moduly`.
+## Related
+Conversion and forms: `syntance-conversion-cro`. Content SEO/GEO: `syntance-perf-a11y-seo-geo`. Forms and inbox: `syntance-magazyn-panel` + the `forms` module in `Syntance/moduly`.

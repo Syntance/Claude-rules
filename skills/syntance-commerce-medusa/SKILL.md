@@ -1,34 +1,34 @@
 ---
 name: syntance-commerce-medusa
-description: E-commerce na Medusa v2 — architektura sklepu, Medusa JS SDK, storefront Next.js, koszyk i stan, PLP/PDP, katalog, inventory, wysyłka (InPost/DPD), pipeline zamówień, Meilisearch, design sklepu. Włącz przy budowie sklepu, integracji Medusa, koszyku, kartach produktu, wysyłce, wyszukiwarce produktów.
+description: E-commerce on Medusa v2 - store architecture, Medusa JS SDK, Next.js storefront, cart and state, PLP/PDP, catalog, inventory, shipping (courier integrations), order pipeline, Meilisearch, store design. Activate when building a store, integrating Medusa, working on the cart, product pages, shipping, or product search.
 ---
 
-# E-commerce (Medusa v2)
+# E-Commerce (Medusa v2)
 
-Benchmark: Aimé Leon Dore, Kith, APC, Frankie Shop, Allbirds, Gymshark. Checkout ma osobny twardy standard → `syntance-checkout-payments`.
+Benchmark: Aimé Leon Dore, Kith, APC, Frankie Shop, Allbirds, Gymshark. Checkout has its own hard standard → `syntance-checkout-payments`.
 
-## Architektura
-- Backend Medusa v2 (API) + storefront Next.js 16. Nie mieszaj logiki commerce do storefrontu — konsumuj przez SDK.
-- **Medusa JS SDK** (`@medusajs/js-sdk`) do storefrontu. `QueryService` + filters po stronie backendu (nigdy raw SQL z user inputem).
-- Moduły domenowe w `apps/backend/src/modules/<domena>` (własne serwisy, modele, migracje).
+## Architecture
+- Medusa v2 backend (API) + Next.js 16 storefront. Don't mix commerce logic into the storefront — consume it via the SDK.
+- **Medusa JS SDK** (`@medusajs/js-sdk`) in the storefront. `QueryService` + filters on the backend side (never raw SQL with user input).
+- Domain modules under `apps/backend/src/modules/<domain>` (own services, models, migrations).
 
-## Koszyk i stan
-- Koszyk server-authoritative (Medusa cart). Client trzyma tylko cart id + optimistic UI. Rewalidacja po mutacji.
-- Region/waluta z kontekstu (nie hardkoduj). Ceny liczy backend, front tylko wyświetla.
+## Cart and state
+- Cart is server-authoritative (Medusa cart). Client only holds the cart id + optimistic UI. Revalidate after every mutation.
+- Region/currency come from context (never hardcoded). Backend computes prices; the frontend only displays them.
 
 ## PLP / PDP
-- PLP: SSG/ISR + filtry przez **nuqs** (URL state). Paginacja/infinite z zachowaniem scrolla.
-- PDP: JSON-LD Product (cena, dostępność, rating), warianty, `min_order_quantity`, galeria z LCP-priority.
-- Wyszukiwarka: **Meilisearch** (moduł + client). Indeks synchronizowany subscriberem.
+- PLP: SSG/ISR + filters via **nuqs** (URL state). Pagination/infinite scroll that preserves scroll position.
+- PDP: JSON-LD Product (price, availability, rating), variants, `min_order_quantity`, LCP-priority gallery image.
+- Search: **Meilisearch** (module + client). Index kept in sync via a subscriber.
 
-## Inventory / wysyłka
-- Stan magazynowy jako źródło prawdy; „scarcity” tylko realny. Rezerwacja przy checkoutcie.
-- Wysyłka PL: InPost (paczkomaty — mapa/geowidget), DPD (moduł fulfillment). Koszty widoczne PRZED ostatnim krokiem checkoutu.
+## Inventory / shipping
+- Inventory state as the single source of truth; "scarcity" claims must be real. Reserve stock at checkout.
+- Domestic shipping: parcel-locker networks and courier modules (fulfillment providers registered per project). Shipping cost shown BEFORE the final checkout step.
 
-## Pipeline zamówień
-- `order.placed` → mail idempotentny, powiadomienie sklepu, sync statusu. Odstąpienie 14 dni + zwroty (→ `syntance-legal-pl-eu`, moduł `returns`).
-- Rewalidacja storefrontu po zmianie produktu/treści (subscriber → `revalidateTag`).
+## Order pipeline
+- `order.placed` → idempotent email, store notification, status sync. 14-day withdrawal + returns (→ `syntance-legal-pl-eu`, `returns` module).
+- Revalidate the storefront after product/content changes (subscriber → `revalidateTag`).
 
-## Tier 2 (kopiuj — nie pisz od zera)
-`Syntance/moduly` → `packages/commerce` (cart, checkout, medusa client, search), `apps/backend/src/modules` (przelewy24, tpay, dpd-fulfillment, meilisearch, returns), `apps/starter-sklep`.
-Instalacja gotowego sklepu → `syntance-moduly-deploy`.
+## Tier 2 (copy — don't build from scratch)
+`Syntance/moduly` → `packages/commerce` (cart, checkout, Medusa client, search), `apps/backend/src/modules` (payment providers, fulfillment, Meilisearch, returns), `apps/starter-sklep`.
+Deploying a ready-made store → `syntance-moduly-deploy`.

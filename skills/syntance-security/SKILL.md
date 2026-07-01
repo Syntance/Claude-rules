@@ -1,50 +1,50 @@
 ---
 name: syntance-security
-description: Cyberbezpieczeństwo — OWASP, walidacja Zod, XSS/CSRF, SSRF, SQL injection, auth (Better Auth/NextAuth), rate limiting, CSP/nagłówki HTTP, SRI, sekrety, supply chain, bezpieczeństwo API i webhooków, monitoring. Włącz przy route.ts, Server Actions, middleware, next.config, integracjach, uploadzie plików, auth, obsłudze inputu użytkownika.
+description: Cybersecurity - OWASP, Zod validation, XSS/CSRF, SSRF, SQL injection, auth (Better Auth/NextAuth), rate limiting, CSP/HTTP headers, SRI, secrets, supply chain, API and webhook security, monitoring. Activate when working on route.ts, Server Actions, middleware, next.config, integrations, file uploads, auth, or handling user input.
 ---
 
-# Bezpieczeństwo (OWASP, defense in depth)
+# Security (OWASP, defense in depth)
 
-Zero trust: każdy input walidowany, każdy request autoryzowany, każdy external call timeoutowany.
+Zero trust: every input validated, every request authorized, every external call timed out.
 
-## Walidacja
-- **Zod** na KAŻDEJ granicy (Server Action, API body, URL params, webhook, form). Jeden schema client+server. Nigdy `as unknown as T` jako escape.
-- `dangerouslySetInnerHTML` tylko po sanityzacji. Na SSR unikaj `isomorphic-dompurify` (jsdom → crash na Next16/Turbopack) — użyj lekkiego strip-HTML; sanityzuj też PRZED zapisem do DB.
-- URL od usera: `https:` only, blacklist `javascript:`/`data:`/`file:`.
+## Validation
+- **Zod** at EVERY boundary (Server Action, API body, URL params, webhook, form). One schema shared client+server. Never `as unknown as T` as a validation escape hatch.
+- `dangerouslySetInnerHTML` only after sanitization. On SSR avoid `isomorphic-dompurify` (pulls in jsdom → crashes on Next 16/Turbopack) — use a lightweight HTML-stripper instead; also sanitize BEFORE writing to the database.
+- User-supplied URLs: `https:` only, blacklist `javascript:`/`data:`/`file:`.
 
 ## XSS / CSRF
-- JSX escape'uje domyślnie. Server Actions: ochrona CSRF automatyczna — NIGDY nie wyłączaj.
-- API mutacje: origin check w middleware. Cookies: `httpOnly` + `secure` + `sameSite`, prefix `__Host-` dla sesji.
+- JSX escapes by default. Server Actions have automatic CSRF protection — NEVER disable it.
+- API mutations: origin check in middleware. Cookies: `httpOnly` + `secure` + `sameSite`, `__Host-` prefix for session cookies.
 
-## SSRF (krytyczne)
-- Fetch z URL usera: zresolwuj DNS i waliduj **ROZWIĄZANY IP** (nie host). Guard na DNS rebinding.
-- Blacklist: `127/8`, `10/8`, `172.16/12`, `192.168/16`, `169.254/16` (metadata!), `::1`, `fc00::/7`.
-- `AbortSignal.timeout(5_000)`, `redirect:'error'` lub re-walidacja celu redirectu.
+## SSRF (critical)
+- Fetching a user-supplied URL: resolve DNS and validate the **RESOLVED IP** (not the hostname). Guard against DNS rebinding.
+- Blacklist: `127/8`, `10/8`, `172.16/12`, `192.168/16`, `169.254/16` (cloud metadata!), `::1`, `fc00::/7`.
+- `AbortSignal.timeout(5_000)`, `redirect:'error'` or re-validate the redirect target.
 
 ## SQL / auth
-- ORM (Prisma/Drizzle), prepared statements. Raw SQL tylko parametryzowany. Medusa: QueryService + filters.
-- Auth: **Better Auth** lub **NextAuth v5**, nigdy custom JWT. Argon2id, MFA dla admina. Sesja server-side, rotacja 24h.
-- Login rate limit: 5/15min per IP+email → CAPTCHA (hCaptcha/Turnstile, nie reCAPTCHA).
+- Use an ORM (Prisma/Drizzle) with prepared statements. Raw SQL only via parameterized queries. Medusa: QueryService + filters.
+- Auth: **Better Auth** or **NextAuth v5**, never a custom JWT implementation. Argon2id, MFA for admin accounts. Server-side sessions, 24h rotation.
+- Login rate limit: 5/15min per IP+email → CAPTCHA (hCaptcha/Turnstile, never reCAPTCHA).
 
 ## Rate limiting
-- **Upstash Ratelimit** w middleware (nie in-memory — ginie przy restart/autoscale). Public 60/min, mutacje 30/min. 429 + `Retry-After`.
+- **Upstash Ratelimit** in middleware (never in-memory — lost on restart/autoscale). 60/min public, 30/min mutations. 429 + `Retry-After`.
 
 ## HTTP headers (single source: next.config/middleware)
-- **CSP**: `script-src` nonce + `'strict-dynamic'` (NIGDY `'unsafe-inline'` dla skryptów). `style-src` musi mieć `'unsafe-inline'`/hashe (Motion/GSAP). Start Report-Only → enforcement.
-- HSTS `max-age=63072000; includeSubDomains; preload`. `X-Content-Type-Options: nosniff`. `Referrer-Policy: strict-origin-when-cross-origin`. `Permissions-Policy` restrykcyjne. COOP `same-origin`. Trusted Types dla script.
-- **SRI** na każdym zewnętrznym `<script src=cdn>` (`integrity` + `crossorigin`).
+- **CSP**: `script-src` nonce + `'strict-dynamic'` (NEVER `'unsafe-inline'` for scripts). `style-src` must allow `'unsafe-inline'`/hashes (Motion/GSAP). Start with Report-Only → then enforce.
+- HSTS `max-age=63072000; includeSubDomains; preload`. `X-Content-Type-Options: nosniff`. `Referrer-Policy: strict-origin-when-cross-origin`. Restrictive `Permissions-Policy`. COOP `same-origin`. Trusted Types for script.
+- **SRI** on every external `<script src=cdn>` (`integrity` + `crossorigin`).
 
-## Sekrety / supply chain
-- Sekrety tylko w ENV (Doppler/Vercel), nigdy w repo. `@t3-oss/env-nextjs`. Rotacja kwartalna + przy leaku.
-- `pnpm install --frozen-lockfile` w CI. socket.dev PR gate, `pnpm audit` fail on critical, Renovate. `ignore-scripts=true` w `.npmrc`.
+## Secrets / supply chain
+- Secrets only in ENV (Doppler/Vercel), never in the repo. Use `@t3-oss/env-nextjs`. Rotate quarterly and immediately after any leak.
+- `pnpm install --frozen-lockfile` in CI. socket.dev PR gate, `pnpm audit` failing on critical, Renovate. `ignore-scripts=true` in `.npmrc`.
 - GitHub secret scanning + push protection + Dependabot ON.
 
-## API / webhooki
-- Webhook signatures: HMAC-SHA256, `crypto.timingSafeEqual` (NIGDY `===`). Weryfikuj podpis PRZED logiką.
-- Idempotency key (UUID klienta, TTL 24h). API versioning `/api/v1/*`.
+## API / webhooks
+- Webhook signatures: HMAC-SHA256, `crypto.timingSafeEqual` (NEVER `===`). Verify the signature BEFORE any business logic.
+- Idempotency key (client-generated UUID, 24h TTL). API versioning `/api/v1/*`.
 
-## Upload plików
-- Signed URLs (S3/R2), nigdy upload do własnego API. Walidacja MIME + re-validate magic bytes (`file-type`). SVG od usera zakazany.
+## File uploads
+- Signed URLs (S3/R2), never upload through your own API. Validate MIME type + re-validate magic bytes (`file-type`). User-uploaded SVG is forbidden.
 
 ## Monitoring
-- Sentry: CSP violations + PII scrubbing w `beforeSend` (email/phone/address/ip). Alerty: brute force, scanner, CSP spike. `/.well-known/security.txt`.
+- Sentry: CSP violations + PII scrubbing in `beforeSend` (email/phone/address/ip). Alert on brute force, scanners, CSP spikes. `/.well-known/security.txt`.

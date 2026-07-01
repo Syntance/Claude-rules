@@ -1,20 +1,20 @@
 # Claude-rules
 
-Reguły i skille dla **Claude Code** — port filozofii Syntance (klasa Awwwards + produkcyjna niezawodność) z [`cursor-rules`](https://github.com/Syntance/cursor-rules). Claude buduje strony i sklepy na poziomie najlepszych studiów: backend, frontend, UX/UI, bezpieczeństwo, wydajność oraz zgodność prawna PL/EU.
+Rules and skills for **Claude Code** — a port of the Syntance philosophy (Awwwards-caliber craft + production-grade reliability) from [`cursor-rules`](https://github.com/Syntance/cursor-rules). Claude builds sites and stores at the level of top-tier studios: backend, frontend, UX/UI, security, performance, and PL/EU legal compliance.
 
-Zaprojektowane pod **niski koszt kontekstu** (progressive disclosure): mały `CLAUDE.md` ładowany zawsze + skille ładowane dopiero gdy potrzebne.
+Designed for **low context cost** (progressive disclosure): a small `CLAUDE.md` loaded always + skills loaded only when needed.
 
-## Jak to działa (3 warstwy)
+## How it works (3 layers)
 
-| Tier | Co | Kiedy ładowane | Koszt |
+| Tier | What | Loaded | Cost |
 | --- | --- | --- | --- |
-| **0 — `CLAUDE.md`** | rola, inwarianty, rejestr skilli, komendy | KAŻDE wywołanie modelu | stały (dlatego krótki) |
-| **1 — `skills/*/SKILL.md`** | wiedza domenowa (design, security, checkout…) | dopiero gdy Claude uzna za potrzebne lub `/nazwa` | tylko gdy użyte |
-| **2 — kod `Syntance/moduly`** | sprawdzony kod do skopiowania | gdy realnie implementujesz | tylko przy czytaniu |
+| **0 — `CLAUDE.md`** | role, invariants, skill registry, commands | EVERY model call | fixed (keep it short) |
+| **1 — `skills/*/SKILL.md`** | domain knowledge (design, security, checkout…) | only when Claude decides it's needed, or via `/name` | only when used |
+| **2 — `Syntance/moduly` code** | proven code to copy | only when actually implementing | only when read |
 
-Zasada: `CLAUDE.md` < ~180 linii, każdy skill zwięzły. Dzięki temu komplet wiedzy nie obciąża każdego zapytania.
+Rule of thumb: `CLAUDE.md` stays under ~180 lines, each skill is concise. This way the full body of knowledge never taxes every single request.
 
-## Struktura
+## Structure
 
 ```
 Claude-rules/
@@ -24,11 +24,11 @@ Claude-rules/
 │   ├── syntance-design/
 │   ├── syntance-motion-3d/
 │   ├── syntance-conversion-cro/
-│   ├── syntance-strategia-negacz/   # NOWE: strategia B2B (SellWise)
-│   ├── syntance-perf-a11y-seo-geo/  # + GEO + pętla PageSpeed
+│   ├── syntance-strategia-negacz/   # B2B strategy (SellWise-inspired)
+│   ├── syntance-perf-a11y-seo-geo/  # + GEO + PageSpeed audit loop
 │   ├── syntance-security/
 │   ├── syntance-legal-pl-eu/
-│   ├── syntance-backend-api/        # NOWE: niezawodność integracji/API
+│   ├── syntance-backend-api/        # integration/API reliability
 │   ├── syntance-commerce-medusa/
 │   ├── syntance-checkout-payments/
 │   ├── syntance-magazyn-panel/
@@ -37,64 +37,64 @@ Claude-rules/
 └── README.md
 ```
 
-## Instalacja skilli Syntance
+## Installing the Syntance skills
 
-### Wariant A — per projekt (commitowalne, zalecane)
+### Option A — global (all projects on this machine, recommended for solo/agency use)
+Copy `skills/*` into `~/.claude/skills/` and `CLAUDE.md` into `~/.claude/CLAUDE.md`. Claude Code auto-discovers both locations at startup — no per-project setup needed afterward.
+
+### Option B — per project (committable, shared with your team)
 ```bash
-# w katalogu projektu
+# inside the project directory
 pnpm dlx degit Syntance/Claude-rules/skills .claude/skills
-pnpm dlx degit Syntance/Claude-rules/CLAUDE.md ./CLAUDE.md   # lub skopiuj ręcznie
+# copy or symlink CLAUDE.md into the project root as well
 ```
-Claude Code automatycznie wykrywa `.claude/skills/` i `CLAUDE.md` w rootcie. Zaakceptuj workspace trust.
+Claude Code auto-detects `.claude/skills/` and a root `CLAUDE.md`. Accept the workspace trust prompt.
 
-### Wariant B — globalnie (wszystkie projekty na tym komputerze)
-Skopiuj `skills/*` do `~/.claude/skills/` oraz `CLAUDE.md` do `~/.claude/CLAUDE.md`.
+Verify with `/context` (what loaded), `/doctor` (are skill descriptions being truncated?), or `/skill-name` (manual invocation).
 
-Weryfikacja: `/context` (co się załadowało), `/doctor` (czy opisy skilli nie są obcinane), `/skill-name` (ręczne wywołanie).
+## External skills and tools to install
 
-## Skille i narzędzia zewnętrzne (zainstaluj)
-
-Te skille/MCP realizują wymogi jakości i są **tanie** (ładują się on-demand).
+These skills/MCP servers fulfill the design/quality bar and are **cheap** (loaded on-demand).
 
 ### Design / UI
 ```bash
-# UI/UX Pro Max — design intelligence (palety, typografia, wzorce UI)
+# UI/UX Pro Max — design intelligence (palettes, typography, UI patterns)
 npm install -g uipro-cli
-uipro init --ai claude            # instaluje do .claude/skills/
+uipro init --ai claude            # installs into .claude/skills/
 
-# 21st.dev Magic MCP — generowanie komponentów (/ui). Klucz z 21st.dev/mcp
-claude mcp add magic --scope user --env API_KEY="twoj-klucz"
+# 21st.dev Magic MCP — component generation (/ui). Get an API key at 21st.dev/mcp
+claude mcp add magic --scope user --env API_KEY="your-key"
 ```
 
-### Dokumentacja i wydajność (MCP)
+### Documentation and performance (MCP)
 ```bash
-# context7 — aktualne API bibliotek (zamiast zgadywać wersje)
+# context7 — up-to-date library APIs (instead of guessing versions)
 claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp
 
-# Chrome DevTools MCP — audyt PageSpeed / Core Web Vitals
+# Chrome DevTools MCP — PageSpeed / Core Web Vitals audits
 claude mcp add chrome-devtools --scope user -- npx -y @chromedevtools/chrome-devtools-mcp
 
-# Playwright MCP — E2E i a11y na żywo
+# Playwright MCP — live E2E and a11y testing
 claude mcp add playwright --scope user -- npx -y @playwright/mcp
 ```
 
-### Skille z marketplace (pluginy)
+### Marketplace skills (plugins)
 ```bash
-# Oficjalne Anthropic
+# Official Anthropic
 /plugin marketplace add anthropics/claude-plugins-official
 /plugin install skill-creator@claude-plugins-official
 /plugin marketplace add anthropics/skills
 /plugin install webapp-testing@anthropic-agent-skills
 
-# Vercel (stack Next.js/deploy): nextjs, react-best-practices, shadcn,
-# deployments-cicd, vercel-cli, env-vars, verification, (ai-sdk gdy AI)
-# Cloudflare: web-perf (audyt PageSpeed przez Chrome DevTools MCP)
+# Vercel (Next.js/deploy stack): nextjs, react-best-practices, shadcn,
+# deployments-cicd, vercel-cli, env-vars, verification, (ai-sdk if using AI)
+# Cloudflare: web-perf (PageSpeed audits via Chrome DevTools MCP)
 ```
-> Nazwy marketplace/pluginów potwierdź aktualnym `/plugin marketplace` — ekosystem się zmienia. Po instalacji: `/reload-plugins`.
+> Confirm exact marketplace/plugin names with `/plugin marketplace` — the ecosystem evolves. After installing: `/reload-plugins`.
 
-## Kiedy który skill (skrót)
+## Which skill for which task (quick reference)
 
-Pełny rejestr w `CLAUDE.md`. W skrócie: setup → `frontend-stack`; wygląd → `design` (+ UI/UX Pro Max, `/ui`); ruch/3D → `motion-3d`; konwersja → `conversion-cro`; strona B2B → `strategia-negacz`; szybkość/SEO/GEO → `perf-a11y-seo-geo` (+ web-perf); bezpieczeństwo → `security`; prawo → `legal-pl-eu`; API/integracje → `backend-api`; sklep → `commerce-medusa`; checkout → `checkout-payments`; panel → `magazyn-panel`; testy/deploy → `quality-release`; gotowe moduły → `moduly-deploy`.
+Full registry lives in `CLAUDE.md`. In short: project setup → `frontend-stack`; visuals → `design` (+ UI/UX Pro Max, `/ui`); motion/3D → `motion-3d`; conversion → `conversion-cro`; B2B site → `strategia-negacz`; speed/SEO/GEO → `perf-a11y-seo-geo` (+ web-perf); security → `security`; compliance → `legal-pl-eu`; API/integrations → `backend-api`; store → `commerce-medusa`; checkout → `checkout-payments`; admin panel → `magazyn-panel`; testing/deploy → `quality-release`; ready-made modules → `moduly-deploy`.
 
-## Relacja do cursor-rules
-To repo jest odpowiednikiem [`cursor-rules`](https://github.com/Syntance/cursor-rules) dla Claude Code. Kod źródłowy do kopiowania: [`Syntance/moduly`](https://github.com/Syntance/moduly).
+## Relation to cursor-rules
+This repo is the Claude Code counterpart to [`cursor-rules`](https://github.com/Syntance/cursor-rules). Source code to copy from: [`Syntance/moduly`](https://github.com/Syntance/moduly).

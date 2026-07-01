@@ -1,50 +1,50 @@
 ---
 name: syntance-checkout-payments
-description: Checkout i bramki płatnicze Medusa v2 (Przelewy24, Tpay, Stripe, przelew) — twardy standard utwardzony na incydentach produkcyjnych: 5 torów domknięcia płatności, kontrakt adaptera bramki, idempotencja sesji, self-healing reconcile, formularz checkoutu, security/CSP, Turnstile za flagą. Włącz przy pracy nad checkoutem, dodawaniu bramki, webhookach płatności, reconcile, formularzu zamówienia.
+description: Checkout and payment gateways on Medusa v2 (Przelewy24, Tpay, Stripe, bank transfer) - the hard standard hardened by production incidents - five payment-closing paths, payment adapter contract, session idempotency, self-healing reconcile, checkout form, security/CSP, Turnstile behind a flag. Activate when working on checkout, adding a payment gateway, payment webhooks, reconcile jobs, or the order form.
 ---
 
-# Checkout & Payments (standard Syntance)
+# Checkout & Payments (Syntance Standard)
 
-Nie projektuj od zera — KOPIUJ z `Syntance/moduly` (`packages/commerce`, `apps/backend`) i podmień klucze/bramkę.
+Don't design from scratch — COPY from `Syntance/moduly` (`packages/commerce`, `apps/backend`) and swap in the project's own keys/gateway.
 
-## 0. Złota zasada
-Stan „opłacone” ustawia WYŁĄCZNIE webhook providera + pull `getPaymentStatus`/`verify`. Redirect `?status=success` NIGDY nie wystarcza (można sfałszować). Zamówienie powstaje tylko po realnym potwierdzeniu środków (`completeCartWorkflow`).
+## 0. Golden rule
+The "paid" state is set EXCLUSIVELY by the provider's webhook + a status pull (`getPaymentStatus`/`verify`). A `?status=success` redirect is NEVER sufficient on its own (it can be forged). An order is only created after real fund confirmation (`completeCartWorkflow`).
 
-## 1. Pięć torów domknięcia (wszystkie MUST)
-1. **Return page** `/checkout/<provider>/return` — pull status → `completeCart` (polling z backoffem).
-2. **Webhook** (`getWebhookActionAndData`) — weryfikacja podpisu PRZED logiką → `verify` → aktualizacja sesji. Nie woła `completeCart`.
-3. **Reconcile scheduled job** (`jobs/reconcile-<provider>-payments.ts`) — co 10 min domyka sieroty. Działa tylko w worker mode shared/worker.
-4. **Reconcile HTTP endpoint + cron Vercel** — siatka NIEZALEŻNA od workera (na 1 instancji „server” joby nie chodzą!).
-5. **Idempotencja + fallback** — reuse pending sesji + circuit breaker → przelew tradycyjny gdy bramka pada.
+## 1. Five payment-closing paths (all MUST)
+1. **Return page** `/checkout/<provider>/return` — pull status → `completeCart` (polling with backoff).
+2. **Webhook** (`getWebhookActionAndData`) — verify the signature BEFORE any logic → `verify` → update the payment session. Does not call `completeCart`.
+3. **Reconcile scheduled job** (`jobs/reconcile-<provider>-payments.ts`) — runs every 10 min to close orphaned carts. Only runs in shared/worker mode.
+4. **Reconcile HTTP endpoint + Vercel cron** — an independent safety net (on a single instance in "server" mode, scheduled jobs don't run at all!).
+5. **Idempotency + fallback** — reuse a pending session + circuit breaker → fall back to manual bank transfer if the gateway is down.
 
-## 2. Kontrakt adaptera bramki
-- Moduł `apps/backend/src/modules/<provider>/` dziedziczy `AbstractPaymentProvider`.
-- `initiatePayment` → `data.redirect_url` (redirect) lub `client_secret` (Stripe). Kwota TYLKO z `input.amount`.
-- `authorizePayment` + `getPaymentStatus` pull-based. `getWebhookActionAndData` z weryfikacją podpisu.
-- Provider id w `packages/commerce/src/payments/providers.ts`. Za flagą `FEATURE_<PROVIDER>=1`.
+## 2. Payment adapter contract
+- Module `apps/backend/src/modules/<provider>/` extends `AbstractPaymentProvider`.
+- `initiatePayment` → returns `data.redirect_url` (redirect flow) or `client_secret` (Stripe). Amount ONLY from `input.amount`.
+- `authorizePayment` + `getPaymentStatus` are pull-based. `getWebhookActionAndData` verifies the signature.
+- Provider id registered in one place: `packages/commerce/src/payments/providers.ts`. Gated by `FEATURE_<PROVIDER>=1`.
 
-## 3. Idempotencja sesji (łapie duplikaty)
-`init<Provider>Redirect` najpierw szuka istniejącej sesji `pending` z gotowym `redirect_url` i ją reużywa (nie rejestruje nowej transakcji). Bug: reload `/start` lub wielokrotny klik „Płać” → wiele porzuconych transakcji.
+## 3. Session idempotency (catches duplicates)
+`init<Provider>Redirect` must first look for an existing `pending` session with a ready `redirect_url` and reuse it (never register a new transaction). Bug this prevents: reloading `/start` or clicking "Pay" multiple times → multiple abandoned transactions.
 
 ## 4. Self-healing reconcile
-- Wspólny rdzeń `lib/run-<provider>-reconcile.ts` (job + endpoint). Endpoint `POST /store/custom/reconcile-<provider>` (sekret `x-order-email-secret`) → dispatch maila idempotentnie.
-- Cron Vercel `/api/cron/reconcile-payments` (Bearer `CRON_SECRET`) co 15 min. `MEDUSA_WORKER_MODE=shared`.
+- Shared core `lib/run-<provider>-reconcile.ts` (used by both the job and the endpoint). Endpoint `POST /store/custom/reconcile-<provider>` (secret header) → dispatches emails idempotently.
+- Vercel cron `/api/cron/reconcile-payments` (Bearer secret) every 15 min. `MEDUSA_WORKER_MODE=shared`.
 
 ## 5. Security
-- Rate limit **Upstash** (nie in-memory). Podpis webhooka przed logiką. Kwota nigdy z URL/body klienta.
-- `AbortSignal.timeout(30_000)` na każdy fetch (P24/Tpay/Stripe/Turnstile/VIES/GUS). Sanityzacja order notes bez `isomorphic-dompurify` (crash SSR). CSP: domeny bramek w `connect-src`/`frame-src`.
+- Rate limit via **Upstash** (never in-memory). Verify the webhook signature before any logic. Amount never taken from client URL/body.
+- `AbortSignal.timeout(30_000)` on every external fetch (gateway, CAPTCHA, tax/registry lookups). Sanitize order notes without `isomorphic-dompurify` (SSR crash risk). CSP `connect-src`/`frame-src` includes gateway domains.
 
-## 6. Formularz
-- Double-submit guard: `useRef` (nie useState) + `disabled`. Walidacja `onBlur` (PL: kod `^\d{2}-\d{3}$`, NIP checksum). Slow-state po 3s.
-- Zgody: osobne checkboxy regulamin + RODO, required, nigdy pre-checked. Guest checkout do końca.
-- **Turnstile** za flagą `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, domyślnie OFF (konwersja). Nigdy reCAPTCHA.
+## 6. Form
+- Double-submit guard: `useRef` (not useState) + `disabled`. Validation `onBlur`. Slow-state message after 3s.
+- Consents: separate checkboxes for terms + privacy, required, never pre-checked. Guest checkout all the way through.
+- **Turnstile** behind a flag (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`), OFF by default (conversion). Never reCAPTCHA.
 
-## 7. Stabilność / bugi z produkcji
-- Circuit breaker per provider → fallback przelew. `completeCart` retry backoff tylko na 409.
-- Webhook idempotency wbudowany w Medusa v2 (`processPaymentWorkflow`) — nie twórz własnej tabeli ani `/api/webhooks/*` (Medusa routuje `/hooks/payment/<id>`).
+## 7. Stability / production bugs fixed by this standard
+- Circuit breaker per provider → fallback to bank transfer. `completeCart` retries with backoff only on 409.
+- Webhook idempotency is built into Medusa v2 (`processPaymentWorkflow`) — don't build your own table or a custom `/api/webhooks/*` route (Medusa routes `/hooks/payment/<id>`).
 
 ## 8. Deploy checklist
-`typecheck+lint+test+e2e` zielone · ENV bramki + `UPSTASH_*` + `CRON_SECRET` + `ORDER_EMAIL_INTERNAL_SECRET` (ten sam FE/BE) + `MEDUSA_WORKER_MODE=shared` · webhook `https://<backend>/hooks/payment/<id>` · CSP z domenami bramek · cron 15 min · Sentry alerty (reconcile-recovered, webhook-sig-fail) · smoke: reload `/start` = 1 transakcja.
+`typecheck+lint+test+e2e` green · gateway ENV vars + rate-limit + cron secrets set · `MEDUSA_WORKER_MODE=shared` · webhook URL registered with the provider · CSP includes gateway domains · cron active (15 min) · Sentry alerts (reconcile-recovered, webhook-sig-fail) · smoke test: reloading `/start` = 1 transaction.
 
-## Tier 2 (mapa kopiowania)
-sanitize-order-notes, `medusa/checkout.ts` (findReusable*), `CheckoutForm.tsx`, `modules/<provider>`, `run-<provider>-reconcile.ts`, endpoint reconcile, subscriber `order-placed`, cron route, `next.config` CSP, `vercel.json`.
+## Tier 2 (copy map)
+sanitize-order-notes, `medusa/checkout.ts` (findReusable*), `CheckoutForm.tsx`, `modules/<provider>`, `run-<provider>-reconcile.ts`, reconcile endpoint, `order-placed` subscriber, cron route, `next.config` CSP, `vercel.json`.

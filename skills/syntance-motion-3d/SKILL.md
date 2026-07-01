@@ -1,38 +1,38 @@
 ---
 name: syntance-motion-3d
-description: Animacje i 3D — Motion (Framer Motion), GSAP + ScrollTrigger, Lenis smooth scroll, React Three Fiber, Rive, Theatre.js. Wydajność animacji, reduced-motion, lazy-loading 3D, fallbacki na słabych urządzeniach. Włącz przy scroll animacjach, parallax, transitions, scenach 3D, cinematic.
+description: Animation and 3D - Motion (Framer Motion), GSAP + ScrollTrigger, Lenis smooth scroll, React Three Fiber, Rive, Theatre.js. Animation performance, reduced-motion, lazy-loading 3D, low-end device fallbacks. Activate for scroll animations, parallax, transitions, 3D scenes, cinematic sequences.
 ---
 
-# Motion i 3D
+# Motion and 3D
 
-## Wybór narzędzia
-- Spring, layout, presence, gesty → **Motion** (`motion/react`).
+## Choosing the right tool
+- Spring, layout, presence, gestures → **Motion** (`motion/react`).
 - Scroll-scrub, pin, horizontal scroll, SplitText → **GSAP** + ScrollTrigger.
 - Smooth scroll → **Lenis** (`ReactLenis`).
-- Scripted camera / cinematic → **Theatre.js**. Gradient na tle → ShaderGradient / OGL.
-- 3D sceny/modele → **R3F** + drei + postprocessing. Interaktywna ilustracja → **Rive**.
-- Lekka animacja bez scroll → Anime.js dopuszczalne (NIE do scroll-scrub).
+- Scripted camera / cinematic → **Theatre.js**. Animated gradient background → ShaderGradient / OGL.
+- 3D scenes/models → **R3F** + drei + postprocessing. Interactive illustration → **Rive**.
+- Light animation without scroll → Anime.js is acceptable (NOT for scroll-scrub).
 
-## MUST (wydajność)
-- GSAP/R3F/Lenis/Theatre NIGDY w initial bundle → `dynamic(..., { ssr: false })` PO first paint.
-- Budżet JS strony bez 3D < 200 KB. Route z 3D: initial < 200 KB, three/r3f (~150 KB) lazy po first paint.
-- Animuj TYLKO `transform` i `opacity`. Nie `left/top/width/height`. `will-change` tylko gdy aktywne + cleanup.
-- `useEffect` z animacją → cleanup: `gsap.context()` + `ctx.revert()`. Domyślny ease `power3.out`/spring, nie `ease-in-out` bez powodu.
+## MUST (performance)
+- GSAP/R3F/Lenis/Theatre NEVER in the initial bundle → `dynamic(..., { ssr: false })` AFTER first paint.
+- JS budget without 3D < 200 KB. Route with 3D: initial < 200 KB, three/r3f (~150 KB) lazy-loaded after first paint.
+- Animate ONLY `transform` and `opacity`. Not `left/top/width/height`. `will-change` only while active + cleanup.
+- `useEffect` with animation → cleanup with `gsap.context()` + `ctx.revert()`. Default ease `power3.out`/spring, not `ease-in-out` without reason.
 
-## Reduced motion (WCAG 2.2 + prawo)
-- `prefers-reduced-motion: reduce` wyłącza parallax, smooth scroll, autoplay, ambient sound, auto-rotate 3D.
-- Auto-ruch > 5s (carousel, marquee) MUSI mieć pauzę z klawiatury + widoczny przycisk.
+## Reduced motion (WCAG 2.2 + legal)
+- `prefers-reduced-motion: reduce` disables parallax, smooth scroll, autoplay, ambient sound, auto-rotating 3D.
+- Auto-motion lasting > 5s (carousel, marquee) MUST have a keyboard-accessible pause + visible pause button.
 
-## Detekcja słabego urządzenia (3D fallback)
-- NIE polegaj na `navigator.deviceMemory` (brak w Safari/iOS).
-- Kombinacja: `matchMedia('(pointer:coarse)')` + viewport < 768px + `navigator.connection?.saveData` + realny FPS probe (sliding window; < 24 fps przez 2s → PNG poster).
+## Low-end device detection (3D fallback)
+- Do NOT rely on `navigator.deviceMemory` (missing in Safari/iOS).
+- Combine: `matchMedia('(pointer:coarse)')` + viewport < 768px + `navigator.connection?.saveData` + a real FPS probe (sliding window; < 24 fps for 2s → fall back to a PNG poster).
 
-## Motion vs konwersja (rozstrzygnięcie)
-- Animacja NIGDY nie opóźnia interaktywności primary CTA. Reveal > 600ms → CTA i tak klikalne od razu.
-- Preloader to overlay NAD elementem LCP (LCP jest w DOM od razu). Brand-intro tylko 1. wizyta (`sessionStorage`).
+## Motion vs conversion (resolution rule)
+- Animation must NEVER delay the interactivity of the primary CTA. If a reveal takes > 600ms, the CTA is clickable immediately regardless.
+- The preloader is an overlay ON TOP of the LCP element (the LCP element is in the DOM immediately). Brand intro only on first visit (`sessionStorage`).
 
-## CSP a animacje
-- Motion/GSAP wstrzykują inline `style` → `style-src` musi mieć `'unsafe-inline'` (lub hashe). `script-src` zostaje nonce + `strict-dynamic`. (szczegóły: `syntance-security`).
+## CSP and animation
+- Motion/GSAP inject inline `style` → `style-src` must allow `'unsafe-inline'` (or hashes). `script-src` stays nonce + `strict-dynamic`. (details: `syntance-security`).
 
 ## A11y
-- SplitText: `aria-label` z pełnym tekstem, spany `aria-hidden`.
+- SplitText: `aria-label` with the full text, spans marked `aria-hidden`.

@@ -1,39 +1,39 @@
 ---
 name: syntance-quality-release
-description: Jakość kodu, testy, ADR, CI/CD i release — TS strict, ESLint, Vitest, Playwright E2E, konwencje commitów, Architecture Decision Records, pipeline CI, deploy (Vercel/Railway), rotacja sekretów, runbooki. Włącz przy konfiguracji testów, CI, przygotowaniu do release/deploy, decyzjach architektonicznych, code review.
+description: Code quality, testing, ADRs, CI/CD, and release management - TS strict, ESLint, Vitest, Playwright E2E, commit conventions, Architecture Decision Records, CI pipelines, deployment (Vercel/Railway), secret rotation, runbooks. Activate when configuring tests, CI, preparing a release/deploy, making architectural decisions, or doing code review.
 ---
 
-# Jakość i release
+# Quality and Release
 
-## Bramka jakości (przed każdym końcem zadania)
+## Quality gate (before finishing any task)
 ```
 pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ```
-Critical path (checkout/płatności/auth) → dodatkowo `pnpm test:e2e`.
+Critical paths (checkout/payments/auth) → also run `pnpm test:e2e`.
 
 ## TypeScript / lint
-- `strict: true`. Bez `any`, bez `as` jako escape. Typy współdzielone w `packages/types`.
-- ESLint + Prettier (turbo). Brak martwego kodu, brak `console.log` w prod.
+- `strict: true`. No `any`, no `as` as an escape hatch. Shared types in `packages/types`.
+- ESLint + Prettier (via turbo). No dead code, no `console.log` in production.
 
-## Testy
-- **Vitest** unit dla logiki (klasyfikacja błędów, idempotencja, parsery, walidacja).
-- **Playwright** E2E dla ścieżek krytycznych: happy path checkout, a11y baseline (axe), smoke sklep/strona.
-- Testuj kontrakty integracji (webhook, reconcile) na sandboxie providera.
+## Testing
+- **Vitest** for unit logic (error classification, idempotency, parsers, validation).
+- **Playwright** E2E for critical paths: checkout happy path, a11y baseline (axe), store/site smoke tests.
+- Test integration contracts (webhooks, reconcile) against the provider's sandbox.
 
-## ADR (Architecture Decision Records)
-- Każda nietrywialna decyzja → `docs/adr/NNN-tytul.md`: kontekst, opcje, decyzja, konsekwencje. Zmiana filozofii → PR + ADR.
+## ADRs (Architecture Decision Records)
+- Every non-trivial decision → `docs/adr/NNN-title.md`: context, options considered, decision, consequences. A philosophy change → PR + ADR.
 
 ## CI/CD
-- `pnpm install --frozen-lockfile`. Etapy: install → typecheck → lint → test → build → (e2e na staging). socket.dev + `pnpm audit` (fail on critical).
-- Preview deploy per PR (Vercel). Promocja do prod po zielonym CI. Rollback udokumentowany.
-- Skille CI/deploy: Vercel `deployments-cicd`, `vercel-cli`.
+- `pnpm install --frozen-lockfile`. Stages: install → typecheck → lint → test → build → (e2e on staging). socket.dev + `pnpm audit` (fail on critical).
+- Preview deploy per PR (Vercel). Promote to production after CI is green. Document rollback steps.
+- Related skills: Vercel `deployments-cicd`, `vercel-cli`.
 
-## Sekrety / bezpieczeństwo release (→ `syntance-security`)
-- ENV w Doppler/Vercel, walidacja T3 Env (build fails gdy brak required). Rotacja kwartalna + natychmiast przy leaku/odejściu.
-- GitHub secret scanning + push protection ON. `.env` w `.gitignore`.
+## Secrets / release security (→ `syntance-security`)
+- ENV in Doppler/Vercel, validated via T3 Env (build fails if required vars are missing). Rotate quarterly and immediately after a leak or team departure.
+- GitHub secret scanning + push protection ON. `.env` in `.gitignore`.
 
-## Runbooki
-- `docs/runbook/`: data-breach (72h, → `syntance-legal-pl-eu`), incydent płatności (reconcile), rollback. Kontakty (UODO, DPO, providerzy).
+## Runbooks
+- `docs/runbook/`: data breach (72h notification, → `syntance-legal-pl-eu`), payment incident (reconcile), rollback. Include contacts (DPA, DPO, providers).
 
-## Weryfikacja end-to-end
-- Po deployu smoke prod (incognito): kluczowa ścieżka + brak PII w Sentry. Użyj skilla Vercel `verification` / Playwright MCP.
+## End-to-end verification
+- After deploy, run a production smoke test (incognito): the key path + confirm no PII leaks into Sentry. Use the Vercel `verification` skill or Playwright MCP.

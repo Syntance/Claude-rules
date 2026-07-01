@@ -1,41 +1,41 @@
 ---
 name: syntance-perf-a11y-seo-geo
-description: Wydajność (Core Web Vitals, PageSpeed Insights), dostępność (WCAG 2.2 AA), SEO techniczne i GEO (Generative Engine Optimization — llms.txt, JSON-LD, treść answer-ready pod AI). Włącz przy optymalizacji szybkości, audycie Lighthouse/PageSpeed, pracy nad a11y, metadanymi, sitemap/robots, widocznością w wyszukiwarkach i silnikach AI.
+description: Performance (Core Web Vitals, PageSpeed Insights), accessibility (WCAG 2.2 AA), technical SEO, and GEO (Generative Engine Optimization - llms.txt, JSON-LD, AI-answer-ready content). Activate when optimizing speed, auditing Lighthouse/PageSpeed, working on a11y, metadata, sitemap/robots, or visibility in search engines and AI engines.
 ---
 
-# Wydajność, a11y, SEO, GEO
+# Performance, A11y, SEO, GEO
 
-## Core Web Vitals (twarde limity)
-- LCP < 2.0s (cel 1.5s, obejmuje preloader). CLS < 0.05. INP < 200ms (cel 100ms). FCP < 1.5s. TTFB < 500ms.
-- Initial JS < 200 KB gz/route (3D lazy po first paint). Sprawdź `@next/bundle-analyzer`.
-- LCP image ≤ 120 KB AVIF, next/image z `priority` + `fetchPriority="high"` + `sizes`. Fonts: next/font `display:swap`.
-- Animuj tylko `transform`/`opacity`. Preconnect do każdego CDN.
+## Core Web Vitals (hard limits)
+- LCP < 2.0s (target 1.5s, includes the preloader). CLS < 0.05. INP < 200ms (target 100ms). FCP < 1.5s. TTFB < 500ms.
+- Initial JS < 200 KB gz/route (3D lazy-loaded after first paint). Check with `@next/bundle-analyzer`.
+- LCP image ≤ 120 KB AVIF, next/image with `priority` + `fetchPriority="high"` + `sizes`. Fonts: next/font `display:swap`.
+- Animate only `transform`/`opacity`. Preconnect to every CDN.
 
-## Pętla audytu PageSpeed (proces, nie jednorazowo)
-1. Mierz: **Chrome DevTools MCP** + skill Cloudflare **web-perf** (lab), Vercel Speed Insights + PostHog Web Vitals (RUM/prod).
-2. Diagnozuj: render-blocking, długie taski (Long Tasks API → Sentry), łańcuchy zależności, layout shift.
-3. Popraw: `scheduler.yield()` w heavy compute, `<Suspense>` boundaries, `dynamic(ssr:false)` dla non-critical, Partytown dla third-party.
-4. Alert: p75 LCP > 2.5s lub INP p75 > 300ms → zbadaj.
+## PageSpeed audit loop (a process, not a one-off)
+1. Measure: **Chrome DevTools MCP** + Cloudflare **web-perf** skill (lab), Vercel Speed Insights + PostHog Web Vitals (RUM/production).
+2. Diagnose: render-blocking resources, long tasks (Long Tasks API → Sentry), dependency chains, layout shift.
+3. Fix: `scheduler.yield()` in heavy compute, `<Suspense>` boundaries, `dynamic(ssr:false)` for non-critical code, Partytown for third-party scripts.
+4. Alert: p75 LCP > 2.5s or INP p75 > 300ms → investigate.
 
-## A11y — WCAG 2.2 AA (minimum prawne, EAA)
-- Jeden `<h1>`/route. Landmarks `<header>/<nav>/<main>/<footer>`. Skip link jako pierwszy focusable.
-- Focus visible zawsze (ring z offset). Target ≥ 24×24px. Focus not obscured (sticky header nie zakrywa).
-- Kontrast 4.5:1 / 3:1. Keyboard: Tab wszędzie, Escape zamyka modale, focus trap w modalach.
-- `aria-live="polite"` toast/status, `assertive` błędy. `prefers-reduced-motion/-transparency`, `forced-colors` obsłużone.
-- Test matrix/release: VoiceOver (Safari), NVDA (Firefox), TalkBack (Chrome). E2E a11y: axe/Playwright.
+## A11y — WCAG 2.2 AA (legal minimum, EU Accessibility Act)
+- One `<h1>`/route. Landmarks `<header>/<nav>/<main>/<footer>`. Skip link as the first focusable element.
+- Focus always visible (ring with offset). Target ≥ 24×24px. Focus not obscured (sticky header must not cover the focused element).
+- Contrast 4.5:1 / 3:1. Keyboard: Tab reaches everything, Escape closes modals, focus trap inside modals.
+- `aria-live="polite"` for toasts/status, `assertive` for errors. Respect `prefers-reduced-motion/-transparency` and `forced-colors`.
+- Screen reader test matrix per release: VoiceOver (Safari), NVDA (Firefox), TalkBack (Chrome). Automated a11y E2E: axe/Playwright.
 
-## SEO techniczne
-- Metadata API w każdym `page.tsx`/`layout.tsx` (`generateMetadata`). Canonical na wszystkich stronach.
+## Technical SEO
+- Metadata API in every `page.tsx`/`layout.tsx` (`generateMetadata`). Canonical tag on every page.
 - OG image 1200×630 (`opengraph-image.tsx`/Satori). Twitter `summary_large_image`.
-- JSON-LD: Organization, WebSite, Product (ecom), BreadcrumbList, Article, FAQPage, LocalBusiness (gdy lokalny).
+- JSON-LD: Organization, WebSite, Product (ecommerce), BreadcrumbList, Article, FAQPage, LocalBusiness (when applicable).
 - `app/sitemap.ts` + `app/robots.ts`. i18n: `hreflang`, `<html lang>`, `generateStaticParams` per locale.
 
-## GEO — Generative Engine Optimization (widoczność w AI)
-- **`llms.txt`** w root: mapa kluczowych treści dla modeli (ChatGPT/Perplexity/Google AI). Opcjonalnie `llms-full.txt`.
-- Treść **answer-ready**: jasne nagłówki-pytania, zwięzłe definicje na początku sekcji, dane w listach/tabelach (łatwe do cytowania przez AI).
-- Bogate dane strukturalne (JSON-LD FAQ/HowTo/Article) — silniki AI je preferują jako źródło.
-- Encje i spójność: nazwa marki, autor, E-E-A-T (autorstwo, źródła, aktualizacje). Cytowalne fakty > marketingowy bełkot.
-- Nie blokuj botów AI w `robots` jeśli chcesz widoczności; świadoma decyzja per projekt.
+## GEO — Generative Engine Optimization (AI visibility)
+- **`llms.txt`** at the root: a map of key content for AI models (ChatGPT/Perplexity/Google AI Overviews). Optionally `llms-full.txt`.
+- **Answer-ready** content: clear question-headings, concise definitions/answers at the start of each section, data in lists/tables (easy for AI to cite).
+- Rich structured data (JSON-LD FAQ/HowTo/Article) — AI engines prefer these as sources.
+- Entities and consistency: brand name, authorship, E-E-A-T (authorship, sources, update dates). Citable facts > marketing fluff.
+- Deliberately decide whether to allow AI bots in `robots` — a conscious per-project choice, not a default block.
 
-## Tier 2 (kopiuj)
+## Tier 2 (copy)
 `Syntance/moduly` → `packages/seo-geo` (`build-metadata`, `json-ld`, `llms-txt`, `robots`, `sitemap`).
