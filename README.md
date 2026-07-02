@@ -33,7 +33,8 @@ Claude-rules/
 │   ├── syntance-checkout-payments/
 │   ├── syntance-magazyn-panel/
 │   ├── syntance-quality-release/
-│   └── syntance-moduly-deploy/
+│   ├── syntance-moduly-deploy/
+│   └── syntance-graphify-workflow/  # graph-first debug/refactor/plan (cost control)
 └── README.md
 ```
 
@@ -94,7 +95,7 @@ claude mcp add playwright --scope user -- npx -y @playwright/mcp
 
 ## Which skill for which task (quick reference)
 
-Full registry lives in `CLAUDE.md`. In short: project setup → `frontend-stack`; visuals → `design` (+ UI/UX Pro Max, `/ui`); motion/3D → `motion-3d`; conversion → `conversion-cro`; B2B site → `strategia-negacz`; speed/SEO/GEO → `perf-a11y-seo-geo` (+ web-perf); security → `security`; compliance → `legal-pl-eu`; API/integrations → `backend-api`; store → `commerce-medusa`; checkout → `checkout-payments`; admin panel → `magazyn-panel`; testing/deploy → `quality-release`; ready-made modules → `moduly-deploy`.
+Full registry lives in `CLAUDE.md`. In short: project setup → `frontend-stack`; visuals → `design` (+ UI/UX Pro Max, `/ui`); motion/3D → `motion-3d`; conversion → `conversion-cro`; B2B site → `strategia-negacz`; speed/SEO/GEO → `perf-a11y-seo-geo` (+ web-perf); security → `security`; compliance → `legal-pl-eu`; API/integrations → `backend-api`; store → `commerce-medusa`; checkout → `checkout-payments`; admin panel → `magazyn-panel`; testing/deploy → `quality-release`; ready-made modules → `moduly-deploy`; debugging/refactor/redesign with a knowledge graph → `graphify-workflow`.
 
 ## Relation to cursor-rules
 This repo is the Claude Code counterpart to [`cursor-rules`](https://github.com/Syntance/cursor-rules). Source code to copy from: [`Syntance/moduly`](https://github.com/Syntance/moduly).

@@ -45,6 +45,7 @@ Skills load only when needed. Activate the matching skill (auto-triggered by des
 | "Magazyn" admin panel, CMS on metadata, file upload | `syntance-magazyn-panel` |
 | Testing, QA, ADRs, CI, release, secret rotation | `syntance-quality-release` |
 | Deploying ready-made modules from Syntance/moduly (CLI, @moduly/* packages) | `syntance-moduly-deploy` |
+| Debugging, refactoring, impact analysis, system redesign in a repo with graphify-out/ | `syntance-graphify-workflow` |
 
 ## External tools (use when relevant — cheap, loaded on-demand)
 - Design intelligence → **UI/UX Pro Max** skill (`/ui-ux-pro-max ...`) for palettes, typography, UI patterns.
@@ -59,6 +60,7 @@ Installation and full list: `README.md`.
 2. Tier 1 = activate ONE matching skill from the registry above.
 3. Tier 2 = `Syntance/moduly` source code — read/copy a specific file only when implementing (skills point to which one).
 Prefer copying proven code from `moduly` over generating from scratch.
+If `graphify-out/graph.json` exists in the repo: graph queries BEFORE any file reads (→ `syntance-graphify-workflow`). `graphify query/path/explain/affected` are local and free — never explore raw files with an expensive model.
 
 ## Process
 Brief (conversion goal + OKLCH palette + typography + hero moment + 3 forbidden things) → atoms → sections → pages. Every non-trivial decision → ADR in `docs/adr/NNN-*.md`. Before finishing: typecheck + lint + test + build.
