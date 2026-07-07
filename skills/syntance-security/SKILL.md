@@ -23,7 +23,8 @@ Zero trust: every input validated, every request authorized, every external call
 
 ## SQL / auth
 - Use an ORM (Prisma/Drizzle) with prepared statements. Raw SQL only via parameterized queries. Medusa: QueryService + filters.
-- Auth: **Better Auth** or **NextAuth v5**, never a custom JWT implementation. Argon2id, MFA for admin accounts. Server-side sessions, 24h rotation.
+- Auth: **Better Auth** or **NextAuth v5**, never a custom JWT implementation. Argon2id. Server-side sessions, 24h rotation.
+- Admin panels on prod: MFA required — passkeys (WebAuthn) preferred, TOTP + backup codes as fallback; or gate behind Cloudflare Access / IP allowlist.
 - Login rate limit: 5/15min per IP+email → CAPTCHA (hCaptcha/Turnstile, never reCAPTCHA).
 
 ## Rate limiting
@@ -31,12 +32,14 @@ Zero trust: every input validated, every request authorized, every external call
 
 ## HTTP headers (single source: next.config/middleware)
 - **CSP**: `script-src` nonce + `'strict-dynamic'` (NEVER `'unsafe-inline'` for scripts). `style-src` must allow `'unsafe-inline'`/hashes (Motion/GSAP). Start with Report-Only → then enforce.
+- Full skeleton: `default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'` (clickjacking) + `form-action 'self'` (+ gateway domains on checkout) + `upgrade-insecure-requests`.
 - HSTS `max-age=63072000; includeSubDomains; preload`. `X-Content-Type-Options: nosniff`. `Referrer-Policy: strict-origin-when-cross-origin`. Restrictive `Permissions-Policy`. COOP `same-origin`. Trusted Types for script.
 - **SRI** on every external `<script src=cdn>` (`integrity` + `crossorigin`).
 
 ## Secrets / supply chain
 - Secrets only in ENV (Doppler/Vercel), never in the repo. Use `@t3-oss/env-nextjs`. Rotate quarterly and immediately after any leak.
 - `pnpm install --frozen-lockfile` in CI. socket.dev PR gate, `pnpm audit` failing on critical, Renovate. `ignore-scripts=true` in `.npmrc`.
+- pnpm `minimumReleaseAge` ≥ 4–7 days (cooldown against fresh-version npm attacks). Pin GitHub Actions by commit SHA, not by tag.
 - GitHub secret scanning + push protection + Dependabot ON.
 
 ## API / webhooks

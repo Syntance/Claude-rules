@@ -43,8 +43,29 @@ The "paid" state is set EXCLUSIVELY by the provider's webhook + a status pull (`
 - Circuit breaker per provider → fallback to bank transfer. `completeCart` retries with backoff only on 409.
 - Webhook idempotency is built into Medusa v2 (`processPaymentWorkflow`) — don't build your own table or a custom `/api/webhooks/*` route (Medusa routes `/hooks/payment/<id>`).
 
-## 8. Deploy checklist
-`typecheck+lint+test+e2e` green · gateway ENV vars + rate-limit + cron secrets set · `MEDUSA_WORKER_MODE=shared` · webhook URL registered with the provider · CSP includes gateway domains · cron active (15 min) · Sentry alerts (reconcile-recovered, webhook-sig-fail) · smoke test: reloading `/start` = 1 transaction.
+## 8. 3DS2 / SCA (PSD2) + PCI DSS (SAQ A)
+- Payment state machine includes `RequiresAction`: Stripe `status === 'requires_action'` → `confirmCardPayment` challenge; challenge timeout 10 min → `Failed`. Test the forced-3DS card in staging before prod.
+- **PCI DSS SAQ A**: the card NEVER touches your server (Stripe Elements iframe / P24 redirect). NEVER build a custom card form. No `card_number`/`cvv`/tokens in any logs — `git-secrets` pre-commit + Sentry `beforeSend` scrubber.
+
+## 9. Fraud / chargebacks
+- Stripe Radar: block score > 75; review 50–75. Force 3DS for high-risk (amount > 500 PLN, new customer, billing ≠ shipping country). Velocity: > 3 orders from one IP in 10 min → alert + manual review.
+- Chargeback webhook (`charge.dispute.created`) → status `disputed` + instant alert; 7 days for evidence. Refunds ONLY from Admin UI/API, never from the storefront.
+
+## 10. Monitoring beyond the five paths
+- **Dead-man's switch**: Sentry Cron Monitoring / healthchecks.io on the reconcile cron — alert when it DIDN'T run (all five closing paths can silently stop; alert on absence, not just on errors).
+- **Daily money reconciliation**: compare the gateway's transaction list (API) against orders in the DB — to the cent, per status. Drift → alert (catches what per-cart reconcile can't: payment without a cart, double capture).
+- Payment success rate per provider with an alert on a > 20% drop vs baseline.
+- Rate-limit fail-open without Upstash: on prod this MUST fire a loud alert — a missing limiter is a config incident, not a mode of operation.
+
+## 11. Anti-forgery regression tests
+- E2E: visiting `/checkout/<provider>/return?status=success` without a real payment does NOT create an order.
+- E2E: client-side amount tampering → the order amount comes from the DB.
+- Unit: double `completeCart` (return page + reconcile in parallel) → one order (the second gets 409/cached).
+- Integration: webhook with a missing/invalid signature → 401, zero state changes.
+- Express checkout (Apple/Google Pay) does not bypass the golden rule — only `completeCart` creates the order.
+
+## 12. Deploy checklist
+`typecheck+lint+test+e2e` green · gateway ENV vars + rate-limit + cron secrets set · `MEDUSA_WORKER_MODE=shared` · webhook URL registered with the provider · CSP includes gateway domains (+ `form-action` with gateway domains, `frame-ancestors 'none'`) · cron active (15 min) · dead-man's switch on the reconcile cron active · Sentry alerts (reconcile-recovered, webhook-sig-fail) · smoke test: reloading `/start` = 1 transaction.
 
 ## Tier 2 (copy map)
 sanitize-order-notes, `medusa/checkout.ts` (findReusable*), `CheckoutForm.tsx`, `modules/<provider>`, `run-<provider>-reconcile.ts`, reconcile endpoint, `order-placed` subscriber, cron route, `next.config` CSP, `vercel.json`.

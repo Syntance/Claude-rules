@@ -37,5 +37,18 @@ description: PL/EU legal compliance - European Accessibility Act, GDPR (data sub
 ## Minimum footer / imprint
 - Company name + legal form, registered address, tax/registration IDs, contact email + phone. Links: terms, privacy policy, accessibility statement, cookie settings (re-open). Year + copyright.
 
+## KSeF — national e-invoicing (Poland; in force: 01.02.2026 largest taxpayers, 01.04.2026 everyone else)
+- Every B2B invoice (customer with a NIP) MUST go through KSeF via a certified provider (Fakturownia/inFakt) — they handle signing, submission, and UPO. B2C stays a classic PDF invoice.
+- Store `ksef_id` + UPO in `order.metadata`. Offline fallback: flag `ksef_pending`, hourly retry cron, alert after 48h without UPO. NEVER generate your own invoice numbers.
+
+## GPSR — General Product Safety Regulation (in force since 13.12.2024)
+- Stores selling physical products MUST show, at the product, the manufacturer's OR EU responsible person's details (name, postal address, e-mail) + safety warnings in the consumer's language. Applies to marketplaces/dropshipping too.
+
+## AI Act — transparency (when the site uses AI)
+- An AI chatbot must disclose that the user is talking to AI (never impersonate a human). Label synthetic/AI-generated content where required.
+
+## Data retention (PL tax + GDPR)
+- Invoices + order data: 5 years (Polish tax law), then anonymize PII (yearly cron). Guest/abandoned carts: 90-day TTL hard delete. Security logs: 12 months.
+
 ## Tier 2 (copy)
 `Syntance/moduly` → `packages/legal-consent` (`ConsentProvider`, `CookieConsent`, terms/privacy/returns page templates).

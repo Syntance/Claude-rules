@@ -8,7 +8,7 @@ Designed for **low context cost** (progressive disclosure): a small `CLAUDE.md` 
 
 | Tier | What | Loaded | Cost |
 | --- | --- | --- | --- |
-| **0 — `CLAUDE.md`** | role, invariants, skill registry, commands | EVERY model call | fixed (keep it short) |
+| **0 — `CLAUDE.md`** | role, operating loop, invariants, hard limits (agent conduct), cost discipline, skill registry, commands | EVERY model call | fixed (keep it short) |
 | **1 — `skills/*/SKILL.md`** | domain knowledge (design, security, checkout…) | only when Claude decides it's needed, or via `/name` | only when used |
 | **2 — `Syntance/moduly` code** | proven code to copy | only when actually implementing | only when read |
 
@@ -33,6 +33,7 @@ Claude-rules/
 │   ├── syntance-checkout-payments/
 │   ├── syntance-magazyn-panel/
 │   ├── syntance-quality-release/
+│   ├── syntance-release-ops/        # deploy, backup/DR, incidents, monitoring
 │   ├── syntance-moduly-deploy/
 │   └── syntance-graphify-workflow/  # graph-first debug/refactor/plan (cost control)
 └── README.md
@@ -95,7 +96,7 @@ claude mcp add playwright --scope user -- npx -y @playwright/mcp
 
 ## Which skill for which task (quick reference)
 
-Full registry lives in `CLAUDE.md`. In short: project setup → `frontend-stack`; visuals → `design` (+ UI/UX Pro Max, `/ui`); motion/3D → `motion-3d`; conversion → `conversion-cro`; B2B site → `strategia-negacz`; speed/SEO/GEO → `perf-a11y-seo-geo` (+ web-perf); security → `security`; compliance → `legal-pl-eu`; API/integrations → `backend-api`; store → `commerce-medusa`; checkout → `checkout-payments`; admin panel → `magazyn-panel`; testing/deploy → `quality-release`; ready-made modules → `moduly-deploy`; debugging/refactor/redesign with a knowledge graph → `graphify-workflow`.
+Full registry lives in `CLAUDE.md`. In short: project setup → `frontend-stack`; visuals → `design` (+ UI/UX Pro Max, `/ui`); motion/3D → `motion-3d`; conversion → `conversion-cro`; B2B site → `strategia-negacz`; speed/SEO/GEO → `perf-a11y-seo-geo` (+ web-perf); security → `security`; compliance → `legal-pl-eu`; API/integrations → `backend-api`; store → `commerce-medusa`; checkout → `checkout-payments`; admin panel → `magazyn-panel`; testing/deploy → `quality-release`; backup/DR/incidents → `release-ops`; ready-made modules → `moduly-deploy`; debugging/refactor/redesign with a knowledge graph → `graphify-workflow`.
 
 ## Relation to cursor-rules
 This repo is the Claude Code counterpart to [`cursor-rules`](https://github.com/Syntance/cursor-rules). Source code to copy from: [`Syntance/moduly`](https://github.com/Syntance/moduly).

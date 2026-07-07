@@ -22,7 +22,8 @@ Benchmark: Aimé Leon Dore, Kith, APC, Frankie Shop, Allbirds, Gymshark. Checkou
 - Search: **Meilisearch** (module + client). Index kept in sync via a subscriber.
 
 ## Inventory / shipping
-- Inventory state as the single source of truth; "scarcity" claims must be real. Reserve stock at checkout.
+- Inventory state as the single source of truth; "scarcity" claims must be real.
+- Reservations: soft hold with a 15-min TTL (release on timeout, permanent decrement on `order.placed`). DB constraint `quantity >= 0` + `SERIALIZABLE` isolation on reservation creation — otherwise a flash sale = overselling + chargebacks.
 - Domestic shipping: parcel-locker networks and courier modules (fulfillment providers registered per project). Shipping cost shown BEFORE the final checkout step.
 
 ## Order pipeline

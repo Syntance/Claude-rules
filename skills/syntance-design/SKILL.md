@@ -39,4 +39,13 @@ Aesthetic benchmark: Active Theory, Resn, Locomotive, Obys, Igloo Inc., Basement
 - Images: AVIF/WebP via next/image. LCP image ≤ 120 KB. User-uploaded SVG forbidden (XSS risk).
 - Video: poster + lazy load, `prefers-reduced-motion` disables autoplay.
 
+## SOTD self-review (gate before shipping a page)
+Score against the Awwwards jury criteria — Design 40 / Usability 30 / Creativity 20 / Content 10:
+- Exactly ONE memorable moment; everything else supports it.
+- Consistent motion identity: 2–3 signature moves from the brief used throughout (→ `syntance-motion-3d`).
+- Interaction inventory: EVERY interactive element has hover/focus/active states with motion, not just the primary CTA.
+- Typography works as design (scale, weight contrast, OpenType details), not just as a text carrier.
+- Consistent photo art direction (grading spec) — zero raw stock.
+- Usability intact: keyboard path + task completion on the conversion path.
+
 Related: `syntance-motion-3d` (motion), `syntance-conversion-cro` (layout for conversion), `syntance-perf-a11y-seo-geo` (contrast/a11y).

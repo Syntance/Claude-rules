@@ -37,3 +37,5 @@ Critical paths (checkout/payments/auth) → also run `pnpm test:e2e`.
 
 ## End-to-end verification
 - After deploy, run a production smoke test (incognito): the key path + confirm no PII leaks into Sentry. Use the Vercel `verification` skill or Playwright MCP.
+- Test on a physical iPhone (Safari): scroll, animations, 100dvh, gateway/parcel-locker widgets — the emulator is not enough.
+- Backup/DR, rollback, incidents, monitoring → `syntance-release-ops`.

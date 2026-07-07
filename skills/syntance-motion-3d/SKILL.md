@@ -13,6 +13,9 @@ description: Animation and 3D - Motion (Framer Motion), GSAP + ScrollTrigger, Le
 - 3D scenes/models → **R3F** + drei + postprocessing. Interactive illustration → **Rive**.
 - Light animation without scroll → Anime.js is acceptable (NOT for scroll-scrub).
 
+## Motion identity (per project)
+- The brief defines 2–3 signature moves (easing + reveal pattern + duration) — use them consistently across the whole project. A random mix of easings = no identity.
+
 ## MUST (performance)
 - GSAP/R3F/Lenis/Theatre NEVER in the initial bundle → `dynamic(..., { ssr: false })` AFTER first paint.
 - JS budget without 3D < 200 KB. Route with 3D: initial < 200 KB, three/r3f (~150 KB) lazy-loaded after first paint.
